@@ -99,6 +99,23 @@ def Your_score(score):
 def message(msg, color):
     mesg = font_style.render(msg, True, color)
     screen.blit(mesg, [700 / 6, 700 / 3])
+
+def classement():
+    i=0
+    classement = []
+    fichier = open ("./classement.txt","r")
+    for line in fichier:
+        classement.append(int(line))
+    fichier.close()
+    return classement
+
+def affichageClass(classement):
+    i=0
+    for line in classement:
+        i=i+1
+        value = score_font.render(str(i)+" - " + str(line), True, red)
+        screen.blit(value, [300, 300+i*30])
+
         
 
 def jeu():
@@ -115,6 +132,7 @@ def jeu():
             screen.fill(couleur_fenetre)
             message("You Lost! Press C-Play Again or Q-Quit", red)
             Your_score(score)
+            affichageClass(classement())
             pygame.display.update()
  
             for event in pygame.event.get():
@@ -133,9 +151,8 @@ def jeu():
                 launched = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if screen.get_at(pygame.mouse.get_pos()) == (255,255,255):  
-                    print("nn")
+                    fade_out(700,800)
                     resetB(board)
-                    print(board)
                     game_close = True
                 else :
                     updateScore(score)
