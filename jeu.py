@@ -3,7 +3,6 @@ import os
 import sys
 from random import randint
 import time
-import Fonction
 
 
 
