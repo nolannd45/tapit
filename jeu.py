@@ -107,15 +107,24 @@ def classement():
     for line in fichier:
         classement.append(int(line))
     fichier.close()
+    classement.reverse()
     return classement
 
 def affichageClass(classement):
     i=0
-    for line in classement:
+    for line in classement[0:10]:
         i=i+1
         value = score_font.render(str(i)+" - " + str(line), True, red)
         screen.blit(value, [300, 300+i*30])
 
+def addScore(score):
+    fichier = open ("./classement.txt","a+")
+    fichier.write("\n"+str(score))
+
+def scorePlus(classement):
+    maxi = max(classement)
+    value = score_font.render(" Votre Score le plus haut : " + str(maxi), True, red)
+    screen.blit(value, [0, 750])
         
 
 def jeu():
@@ -133,6 +142,7 @@ def jeu():
             message("You Lost! Press C-Play Again or Q-Quit", red)
             Your_score(score)
             affichageClass(classement())
+            scorePlus(classement())
             pygame.display.update()
  
             for event in pygame.event.get():
@@ -151,6 +161,7 @@ def jeu():
                 launched = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if screen.get_at(pygame.mouse.get_pos()) == (255,255,255):  
+                    addScore(score)
                     fade_out(700,800)
                     resetB(board)
                     game_close = True
