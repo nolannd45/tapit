@@ -136,7 +136,6 @@ def jeu():
     creer_quadrillage()
     score = 0
     while launched:
-
         while game_close == True:
             screen.fill(couleur_fenetre)
             message("You Lost! Press C-Play Again or Q-Quit", red)
