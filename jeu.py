@@ -16,6 +16,8 @@ screen.fill(couleur_fenetre) #remplir la fenetre avec une couleur
 
 #images :
 
+red = (213, 50, 80)
+
 # sons :
 
 
@@ -24,12 +26,10 @@ couleur_point = (127,127,127)
 
 pygame.display.flip() #mettre a jour l'affichage pour la couleur
 
-#code pour garder la fenetre ouverte
 
-board = [[0,0,0,0],
-        [0,0,0,0],
-        [0,0,0,0],
-        [0,0,0,0]]
+
+def resetB(board):
+    board = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
 
 def creer_quadrillage():
     u=175
@@ -45,9 +45,9 @@ def find_on_board(lists):
     return res
                 
 
-def delete_square():
+def delete_square(board):
     pos = pygame.mouse.get_pos()
-    black_squares = get_square_board()
+    black_squares = get_square_board(board)
     for index in black_squares:
         if pos[0] > index[1]*175 and pos[0] <= (index[1]+1)*175:
             if pos[1] > index[0]*175 and pos[1] <= (index[0]+1)*175:
@@ -56,7 +56,7 @@ def delete_square():
                 var_memoire = (index[0], index[1])
                 return var_memoire 
 
-def put_random_square(var_memoire):
+def put_random_square(var_memoire,board):
     # à opti fdp : https://stackoverflow.com/questions/29804599/python-random-number-excluding-one-variables
     y = randint(0,3)
     x = randint(0,3)
@@ -66,7 +66,7 @@ def put_random_square(var_memoire):
     pygame.draw.rect(screen , (0,0,0), pygame.Rect(x*175,y*175,175,175))
     board[y][x] = 1
 
-def get_square_board():
+def get_square_board(board):
     res = []
     for y in range(4):
         for x in range(4):
@@ -84,48 +84,99 @@ def fade_out(largeur, longueur):
         pygame.display.update()
         pygame.time.wait(5)
 
-def game_lost():
-    ...
+font_style = pygame.font.SysFont("bahnschrift", 25)
+score_font = pygame.font.SysFont("comicsansms", 35)
 
+def Your_score(score):
+    value = score_font.render("Your Score: " + str(score), True, red)
+    screen.blit(value, [0, 0])
+
+def message(msg, color):
+    mesg = font_style.render(msg, True, color)
+    screen.blit(mesg, [700 / 6, 700 / 3])
         
 
+def jeu():
+    screen.fill(couleur_fenetre)
+    board = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+    launched = True
+    game_close = False
+    a = (0,0)
+    creer_quadrillage()
+    score = 0
+    while launched:
 
-launched = True
-a = (0,0)
-creer_quadrillage()
-game = "True"
-score = 0
-while launched:
-    if game == "True":
+        while game_close == True:
+            screen.fill(couleur_fenetre)
+            message("You Lost! Press C-Play Again or Q-Quit", red)
+            Your_score(score)
+            pygame.display.update()
+ 
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        pygame.quit()
+                    if event.key == pygame.K_c:
+                        jeu()
+
         while find_on_board(board) < 3:
-            put_random_square(a)
+            put_random_square(a,board)
             creer_quadrillage()
             pygame.display.flip()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 launched = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if screen.get_at(pygame.mouse.get_pos()) == (255,255,255):   
-                    
-                    fade_out(700, 700)
-                    game = "inter"
+                if screen.get_at(pygame.mouse.get_pos()) == (255,255,255):  
+                    print("nn")
+                    resetB(board)
+                    print(board)
+                    game_close = True
                 else :
                     score = score + 1
                     print(score)
-                    a = delete_square()
+                    a = delete_square(board)
                     creer_quadrillage()
-    if game == "inter":
-        game = "False"
-    if game == "False":
+        pygame.display.update()
+
+def button(screen, position, text):
+    font = pygame.font.SysFont("Arial", 50)
+    text_render = font.render(text, 1, (255, 0, 0))
+    x, y, w , h = text_render.get_rect()
+    x, y = position
+    pygame.draw.line(screen, (150, 150, 150), (x, y), (x + w , y), 5)
+    pygame.draw.line(screen, (150, 150, 150), (x, y - 2), (x, y + h), 5)
+    pygame.draw.line(screen, (50, 50, 50), (x, y + h), (x + w , y + h), 5)
+    pygame.draw.line(screen, (50, 50, 50), (x + w , y+h), [x + w , y], 5)
+    pygame.draw.rect(screen, (100, 100, 100), (x, y, w , h))
+    return screen.blit(text_render, (x, y))
+
+def menu():
+    """ This is the menu that waits you to click the s key to start """
+    b1 = button(screen, (300, 300), "Quit")
+    b2 = button(screen, (400, 300), "Start")
+    menu = True
+    while menu:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                launched = False
+            if (event.type == pygame.QUIT):
+                pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                key_to_start = event.key == pygame.K_s or event.key == pygame.K_RIGHT or event.key == pygame.K_UP
+                if key_to_start:
+                   jeu()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if b2.collidepoint(pygame.mouse.get_pos()):
+                    jeu()
+                elif b1.collidepoint(pygame.mouse.get_pos()):
+                    pygame.quit()
                 
-          
-    pygame.display.flip()
+                    
+        pygame.display.update()
+    pygame.quit()
 
 
-
-pygame.display.flip()
+menu()
 
 
