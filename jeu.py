@@ -11,7 +11,7 @@ pygame.init()
 pygame.display.set_caption("Don't tap it !") # nom de la fenetre
 
 couleur_fenetre = (255,255,255) # code de la couleur
-screen = pygame.display.set_mode((700,700)) #taille fenetre
+screen = pygame.display.set_mode((700,800)) #taille fenetre
 screen.fill(couleur_fenetre) #remplir la fenetre avec une couleur
 
 #images :
@@ -57,7 +57,6 @@ def delete_square(board):
                 return var_memoire 
 
 def put_random_square(var_memoire,board):
-    # à opti fdp : https://stackoverflow.com/questions/29804599/python-random-number-excluding-one-variables
     y = randint(0,3)
     x = randint(0,3)
     while board[y][x] == 1 or var_memoire == (y,x):
@@ -86,6 +85,12 @@ def fade_out(largeur, longueur):
 
 font_style = pygame.font.SysFont("bahnschrift", 25)
 score_font = pygame.font.SysFont("comicsansms", 35)
+
+def updateScore(score):
+    sc = pygame.draw.rect(screen, couleur_fenetre, pygame.Rect(0, 750, 250, 50)) 
+    pygame.display.flip()
+    affScore = score_font.render("Your Score: " + str(score), True, red)
+    screen.blit(affScore, [0, 750])
 
 def Your_score(score):
     value = score_font.render("Your Score: " + str(score), True, red)
@@ -133,6 +138,7 @@ def jeu():
                     print(board)
                     game_close = True
                 else :
+                    updateScore(score)
                     score = score + 1
                     print(score)
                     a = delete_square(board)
@@ -153,8 +159,9 @@ def button(screen, position, text):
 
 def menu():
     """ This is the menu that waits you to click the s key to start """
-    b1 = button(screen, (300, 300), "Quit")
-    b2 = button(screen, (400, 300), "Start")
+    b1 = button(screen, (150, 400), "Quit")
+    b2 = button(screen, (500, 400), "Start")
+    message("Welcome to Don't tap it ! Press start to play ", red)
     menu = True
     while menu:
         for event in pygame.event.get():
